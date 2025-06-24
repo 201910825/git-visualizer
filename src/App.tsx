@@ -6,6 +6,7 @@ import GitTree from './components/GitTree'
 import RepositoryForm from './components/RepositoryForm'
 import Footer from './components/Footer'
 import SplashScreen from './components/SplashScreen'
+import { SEO, generateRepoSEO } from './components/SEO'
 import type { RepositoryData } from './components/GitTree/types'
 import { getRepositoryData } from './services/githubService'
 
@@ -19,6 +20,10 @@ function App() {
   const [progress, setProgress] = useState(0)
   const [currentStep, setCurrentStep] = useState('')
 
+  // 동적 SEO 설정
+  const currentSEO = currentRepo 
+    ? generateRepoSEO(currentRepo.owner, currentRepo.repo)
+    : undefined;
 
   const handleFormSubmit = async (owner: string, repo: string) => {
     try {
@@ -56,6 +61,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
+      {/* 동적 SEO 적용 */}
+      <SEO {...currentSEO} />
+      
       {/* 스플래시 화면 (로딩 중일 때) */}
       {loading && currentRepo && (
         <SplashScreen

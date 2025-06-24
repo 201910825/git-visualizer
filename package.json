@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/201910825/gitview#readme",
+  "homepage": "https://gitvisualizer.duckdns.org",
   "bugs": {
     "url": "https://github.com/201910825/gitview/issues"
   },
@@ -14,7 +14,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seo:generate": "node scripts/generate-seo.js",
+    "seo:validate": "npm run seo:generate && npm run build",
+    "deploy": "npm run seo:generate && npm run build && npm run preview",
+    "analyze": "npm run build && npx vite-bundle-analyzer dist"
   },
   "dependencies": {
     "@octokit/rest": "^20.1.2",
@@ -39,5 +43,18 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "vite": "^5.1.4"
-  }
+  },
+  "keywords": [
+    "git",
+    "visualizer",
+    "github",
+    "repository",
+    "branch",
+    "commit",
+    "developer-tools",
+    "visualization",
+    "react",
+    "typescript"
+  ],
+  "description": "GitHub 레포지토리의 브랜치와 커밋 히스토리를 직관적으로 시각화하는 무료 웹 도구"
 }
