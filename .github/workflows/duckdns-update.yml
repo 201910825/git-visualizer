@@ -1,0 +1,39 @@
+name: 🦆 DuckDNS Auto Update
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # 10분마다 실행
+  workflow_dispatch:        # 수동 실행 가능
+
+jobs:
+  update-duckdns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 DuckDNS IP 업데이트
+        run: |
+          echo "🦆 DuckDNS 자동 업데이트 시작..."
+          echo "🌐 도메인: gitvisualizer.duckdns.org"
+          
+          response=$(curl -s "https://www.duckdns.org/update?domains=gitvisualizer&token=${{ secrets.DUCKDNS_TOKEN }}&ip=")
+          
+          echo "📡 DuckDNS 서버 응답: $response"
+          
+          if [ "$response" = "OK" ]; then
+            echo "✅ DuckDNS IP 업데이트 성공!"
+            echo "🎉 gitvisualizer.duckdns.org 연결 유지됨"
+          else
+            echo "❌ DuckDNS 업데이트 실패!"
+            echo "🚨 응답: $response"
+            exit 1
+          fi
+
+      - name: 🔍 도메인 상태 확인
+        run: |
+          echo "🔍 DNS 전파 상태 확인 중..."
+          nslookup gitvisualizer.duckdns.org || echo "⏳ DNS 전파 대기 중..."
+          
+      - name: 📊 완료 상태
+        run: |
+          echo "🎯 자동 업데이트 작업 완료!"
+          echo "⏰ 다음 실행: 10분 후"
+          echo "🌐 사이트: https://gitvisualizer.duckdns.org"
