@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: gitvisualizer
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_GITHUB_TOKEN
+        sync: false  # 수동으로 설정할 예정
+    domains:
+      - gitvisualizer.duckdns.org  # 커스텀 도메인 

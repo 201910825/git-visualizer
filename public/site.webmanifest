@@ -1,0 +1,44 @@
+{
+  "name": "Git Visualizer - GitHub 레포지토리 시각화 도구",
+  "short_name": "GitVisualizer",
+  "description": "GitHub 레포지토리의 브랜치와 커밋을 직관적으로 시각화하는 도구",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1f2937",
+  "background_color": "#111827",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "ko",
+  "categories": ["developer", "tools", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.jpg",
+      "sizes": "1280x800",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-narrow.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+} 

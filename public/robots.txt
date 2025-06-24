@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap 위치
+Sitemap: https://gitvisualizer.duckdns.org/sitemap.xml
+
+# 크롤링 지연 설정
+Crawl-delay: 1
+
+# 특정 파일/폴더 차단
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /node_modules/
+
+# 검색엔진별 설정
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: NaverBot
+Allow: /

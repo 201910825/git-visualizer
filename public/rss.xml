@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Git Visualizer Blog</title>
+    <description>GitHub 레포지토리 시각화 도구 관련 소식과 팁</description>
+    <link>https://gitvisualizer.duckdns.org</link>
+    <atom:link href="https://gitvisualizer.duckdns.org/rss.xml" rel="self" type="application/rss+xml"/>
+    <language>ko-KR</language>
+    <lastBuildDate>Tue, 24 Jun 2025 12:35:41 GMT</lastBuildDate>
+    
+    <item>
+      <title>Git Visualizer 소개</title>
+      <description>GitHub 레포지토리를 시각적으로 분석하는 새로운 방법</description>
+      <link>https://gitvisualizer.duckdns.org</link>
+      <pubDate>Tue, 24 Jun 2025 12:35:41 GMT</pubDate>
+      <guid>https://gitvisualizer.duckdns.org/posts/introduction</guid>
+    </item>
+  </channel>
+</rss>

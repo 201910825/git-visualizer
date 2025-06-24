@@ -1,0 +1,19 @@
+{
+  "images": [
+    {
+      "url": "https://gitvisualizer.duckdns.org/og-image.jpg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Git Visualizer - GitHub 레포지토리 시각화 도구"
+    },
+    {
+      "url": "https://gitvisualizer.duckdns.org/og-repo-image.jpg",
+      "width": 1200,
+      "height": 630,
+      "alt": "GitHub 레포지토리 분석 결과"
+    }
+  ],
+  "twitter_card": "summary_large_image",
+  "created": "2025-06-24",
+  "domain": "https://gitvisualizer.duckdns.org"
+}
