@@ -23,6 +23,11 @@ const GitTree: React.FC<GitTreeProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'all' | 'author' | 'branch'>('all');
 
+  // 드래그 스크롤 관련 상태
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
+
   // 팀원(작성자) 목록
   const authors = useMemo(() => {
     const authorSet = new Set(commits.map(commit => commit.author));
@@ -47,6 +52,40 @@ const GitTree: React.FC<GitTreeProps> = ({
       return matchesSearch && matchesAuthor && matchesBranch;
     });
   }, [commits, searchTerm, selectedAuthors, selectedBranches]);
+
+  // 드래그 스크롤 핸들러
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const scrollElement = e.currentTarget as HTMLElement;
+    
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+    setScrollStart({
+      left: scrollElement.scrollLeft,
+      top: scrollElement.scrollTop
+    });
+    
+    // 드래그 중 텍스트 선택 방지
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    
+    const scrollElement = e.currentTarget as HTMLElement;
+    const deltaX = e.clientX - dragStart.x;
+    const deltaY = e.clientY - dragStart.y;
+    
+    scrollElement.scrollLeft = scrollStart.left - deltaX;
+    scrollElement.scrollTop = scrollStart.top - deltaY;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
 
   return (
     <div className="flex flex-col space-y-6">
@@ -159,12 +198,17 @@ const GitTree: React.FC<GitTreeProps> = ({
       </div>
 
       {/* 그래프 영역 */}
-      <div className="relative overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <BranchGraph
           commits={filteredCommits}
           branches={selectedBranches}
           defaultBranch={defaultBranch}
           onCommitClick={onCommitClick}
+          isDragging={isDragging}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         />
       </div>
 

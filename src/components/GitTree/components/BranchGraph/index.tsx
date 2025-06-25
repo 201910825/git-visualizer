@@ -16,6 +16,11 @@ interface BranchGraphProps {
   branches: string[];
   defaultBranch: string;
   onCommitClick?: (hash: string) => void;
+  isDragging?: boolean;
+  onMouseDown?: (e: React.MouseEvent) => void;
+  onMouseMove?: (e: React.MouseEvent) => void;
+  onMouseUp?: () => void;
+  onMouseLeave?: () => void;
 }
 
 // 팀원별 색상
@@ -310,6 +315,11 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
   branches,
   defaultBranch,
   onCommitClick,
+  isDragging = false,
+  onMouseDown,
+  onMouseMove,
+  onMouseUp,
+  onMouseLeave,
 }) => {
   const [hoveredCommit, setHoveredCommit] = useState<CommitNodeWith2DPosition | null>(null);
   const [selectedAuthor, ] = useState<string | null>(null);
@@ -1003,14 +1013,14 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
   const GitActivityDashboard = () => {
 
     return (
-      <div className="w-full bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-2 sm:p-6 z-10" style={{ height: isDesktop ? '400px' : '150px' }}>
+      <div className="w-full bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-2 sm:p-6 z-10">
         <h3 className="text-gray-900 dark:text-white text-sm sm:text-xl font-bold mb-2 sm:mb-6 flex items-center">
           📊 Git 활동 분석
         </h3>
         
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
           {/* 전체 통계 - 모바일에서 간소화 */}
-          <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 border border-gray-200 dark:border-gray-600">
+          <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 border border-gray-200 dark:border-gray-600 ">
             <h4 className="text-gray-900 dark:text-white font-semibold mb-2 sm:mb-4 text-xs sm:text-base">📈 통계</h4>
             <div className="grid grid-cols-2 gap-1 sm:gap-4">
               <div className="text-center">
@@ -1027,7 +1037,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
           {/* 개발자별 활동 - 모바일에서 간소화 */}
           <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 border border-gray-200 dark:border-gray-600">
             <h4 className="text-gray-900 dark:text-white font-semibold mb-2 sm:mb-4 text-xs sm:text-base">👥 개발자</h4>
-            <div className="space-y-1 sm:space-y-3 max-h-16 sm:max-h-64 overflow-y-auto">
+            <div className="space-y-1 sm:space-y-3 max-h-[100px] sm:max-h-64 overflow-y-auto">
               {Object.entries(gitActivityStats.authorActivity)
                 .sort(([,a], [,b]) => b.commits - a.commits)
                 .slice(0, isDesktop ? 10 : 2)
@@ -1053,7 +1063,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
           {/* 브랜치별 활동 - 데스크톱에서만 표시 */}
           <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 hidden lg:block border border-gray-200 dark:border-gray-600">
             <h4 className="text-gray-900 dark:text-white font-semibold mb-2 sm:mb-4 text-xs sm:text-base">🌿 브랜치</h4>
-            <div className="space-y-1 sm:space-y-3 max-h-16 sm:max-h-64 overflow-y-auto">
+            <div className="space-y-1 min-h-[50%] sm:space-y-3 max-h-16 sm:max-h-64 overflow-y-auto">
               {Object.entries(gitActivityStats.branchActivity)
                 .sort(([,a], [,b]) => b.commits - a.commits)
                 .slice(0, 3)
@@ -1139,7 +1149,16 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
       </div>
 
       {/* 메인 그래프 영역 - 모바일 최적화 */}
-      <div className="ml-60 sm:ml-80 relative overflow-auto" style={{ height: isDesktop ? 'calc(100vh - 200px)' : 'calc(100vh - 150px)' }}>
+      <div 
+        className={`ml-60 sm:ml-80 relative overflow-auto ${
+          isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
+        }`}
+        style={{ height: isDesktop ? 'calc(100vh - 200px)' : 'calc(100vh - 150px)' }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
+      >
         <svg
           width={svgDimensions.svgWidth}
           height={svgDimensions.svgHeight}
