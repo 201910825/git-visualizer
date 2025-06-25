@@ -14,13 +14,18 @@ jobs:
           echo "🦆 DuckDNS 자동 업데이트 시작..."
           echo "🌐 도메인: gitvisualizer.duckdns.org"
           
-          response=$(curl -s "https://www.duckdns.org/update?domains=gitvisualizer&token=${{ secrets.DUCKDNS_TOKEN }}&ip=")
+          # Vercel IP 동적 감지
+          echo "🔍 현재 Vercel IP 확인 중..."
+          VERCEL_IP=$(nslookup git-visualizer-201910825.vercel.app | grep -A1 "Name:" | tail -1 | awk '{print $2}' || echo "216.198.79.193")
+          echo "📍 감지된 Vercel IP: $VERCEL_IP"
+          
+          response=$(curl -s "https://www.duckdns.org/update?domains=gitvisualizer&token=${{ secrets.DUCKDNS_TOKEN }}&ip=$VERCEL_IP")
           
           echo "📡 DuckDNS 서버 응답: $response"
           
           if [ "$response" = "OK" ]; then
             echo "✅ DuckDNS IP 업데이트 성공!"
-            echo "🎉 gitvisualizer.duckdns.org 연결 유지됨"
+            echo "🎉 gitvisualizer.duckdns.org → $VERCEL_IP"
           else
             echo "❌ DuckDNS 업데이트 실패!"
             echo "🚨 응답: $response"
