@@ -165,6 +165,21 @@ export async function getRepositoryData(
     
     if (!repoData) {
       const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+      if(repoResponse.status === 404){
+        throw new Error("저장소가 존재하지 않습니다.");
+      }
+      if(repoResponse.status === 403){
+        throw new Error("저장소에 접근할 수 없습니다 private 저장소 인가요?");
+      }
+      if(repoResponse.status === 401){
+        throw new Error("저장소에 접근할 수 없습니다");
+      }
+      if(repoResponse.status === 400){
+        throw new Error("저장소에 접근할 수 없습니다");
+      }
+      if(repoResponse.status === 500){
+        throw new Error("저장소에 접근할 수 없습니다");
+      }
       if (!repoResponse.ok) {
         throw new Error(`GitHub API 호출 중 오류가 발생했습니다: ${repoResponse.status}`);
       }

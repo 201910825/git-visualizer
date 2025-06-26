@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { CardWithMovingBorder } from '../ui/moving-border'
 
 interface RepositoryFormProps {
   onSubmit: (owner: string, repo: string) => void
   loading: boolean
   error: string | null
 }
+
+
 
 export default function RepositoryForm({ onSubmit, loading, error }: RepositoryFormProps) {
   const [owner, setOwner] = useState('')
@@ -40,9 +43,9 @@ export default function RepositoryForm({ onSubmit, loading, error }: RepositoryF
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-3xl mx-auto flex flex-col items-center justify-center h-[50%] w-full">
       {/* 소개 섹션 */}
-      <section className="text-center mb-8 sm:mb-12">
+      <section className="text-center mb-8 sm:mb-12 ">
         <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">
           Git 히스토리를 한눈에 파악하세요
         </h2>
@@ -52,7 +55,7 @@ export default function RepositoryForm({ onSubmit, loading, error }: RepositoryF
       </section>
 
       {/* 저장소 입력 폼 */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-8">
+      <div className="bg-transparent dark:bg-transparent rounded-xl shadow-lg p-4 sm:p-8 w-full">
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* 입력 방법 선택 */}
           <div className="flex justify-center space-x-2 sm:space-x-4 mb-4 sm:mb-6">
@@ -104,7 +107,7 @@ export default function RepositoryForm({ onSubmit, loading, error }: RepositoryF
 
           {/* 직접 입력 폼 */}
           {url === '' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center justify-center">
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   저장소 소유자 (혹은 조직)
@@ -144,21 +147,23 @@ export default function RepositoryForm({ onSubmit, loading, error }: RepositoryF
           )}
 
           {/* 시각화 버튼 */}
-          <button
+          <div className="w-full flex items-center justify-center">
+          <CardWithMovingBorder
             type="submit"
             disabled={loading || !owner || !repo}
-            className={`w-full py-3 text-sm sm:text-base rounded-lg font-medium text-white transition-colors
+            className={`w-full py-3 text-sm sm:text-base rounded-lg font-medium text-white transition-colors text-center flex items-center justify-center
               ${loading || !owner || !repo
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-primary/10 text-primary hover:bg-primary/20'}`}
-          >
-            {loading ? 'Loading...' : 'GO!'}
-          </button>
+            >
+              {loading ? 'Loading...' : 'GO!'}
+            </CardWithMovingBorder>
+          </div>
 
           {/* 에러 메시지 */}
           {error && (
             <div className="mt-4 p-3 sm:p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400">
-              <p className="text-sm">{error}</p>
+              <p className="text-sm text-center ">{error}</p>
             </div>
           )}
         </form>

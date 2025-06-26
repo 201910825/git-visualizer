@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
+import { GraphBackground } from "../../../ui/graphBackground";
+import { PointerHighlight } from "../../../ui/pointer-highlight";
 import type { CommitNode } from '../../types';
+import { motion } from 'motion/react';
 
 interface CommitNodeWith2DPosition extends CommitNode {
   x: number;
@@ -115,8 +118,8 @@ const getBranchType = (branchName: string, defaultBranch: string) => {
   return 'other';
 };
 
-// 모달 컴포넌트
-const CommitModal: React.FC<{
+// Animated 모달 컴포넌트
+const CommitAnimatedModal: React.FC<{
   commit: CommitNodeWith2DPosition;
   authors: string[];
   branches: string[];
@@ -125,147 +128,171 @@ const CommitModal: React.FC<{
 }> = ({ commit, authors, branches, defaultBranch, onClose }) => {
   const branchType = getBranchType(commit.branch, defaultBranch);
   
+  const statIcons = [
+    { label: '추가', value: commit.stats.additions, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20', icon: '➕' },
+    { label: '삭제', value: commit.stats.deletions, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/20', icon: '➖' },
+    { label: '총합', value: commit.stats.total, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20', icon: '📊' }
+  ];
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">커밋 상세 정보</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-white dark:bg-neutral-900 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-neutral-700" onClick={(e) => e.stopPropagation()}>
+        {/* 헤더 */}
+        <div className="flex justify-between items-start mb-6">
+          <h4 className="text-lg md:text-2xl text-neutral-600 dark:text-neutral-100 font-bold">
+            커밋 상세 정보 {" "}
+            <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-neutral-800 dark:border-neutral-700 border border-gray-200 text-base">
+              {commit.hash}
+            </span>{" "}
+            📝
+          </h4>
           <button
             onClick={onClose}
-            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-xl"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
           >
             ×
           </button>
         </div>
         
-        <div className="space-y-4">
-          {/* 커밋 메시지 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              커밋 메시지
-            </label>
-            <p className="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              {commit.message}
+        {/* 커밋 메시지 */}
+        <div className="mb-6">
+          <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <p className="text-lg font-medium text-gray-900 dark:text-white">
+              "{commit.message}"
             </p>
           </div>
+        </div>
 
-          {/* 작성자 정보 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              작성자
-            </label>
-            <div className="flex items-center space-x-2">
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: getAuthorColor(commit.author, authors) }}
-              />
-              <span className="text-gray-900 dark:text-white">{commit.author}</span>
-            </div>
+        {/* 통계 카드들 */}
+        <div className="flex justify-center items-center mb-6 gap-4">
+          {statIcons.map((stat,) => (
+            <motion.div
+              key={stat.label}
+              initial={{
+                rotate: Math.random() * 10 - 5,
+              }}
+              whileHover={{
+                scale: 1.1,
+                rotate: 0,
+                zIndex: 100,
+              }}
+              whileTap={{
+                scale: 1.1,
+                rotate: 0,
+                zIndex: 100,
+              }}
+              className={`rounded-xl p-4 ${stat.bg} dark:border-neutral-700 border border-neutral-200`}
+            >
+              <div className="text-center">
+                <div className="text-3xl mb-2">{stat.icon}</div>
+                <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* 상세 정보 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          
+          {/* 작성자 */}
+          <div className="flex items-center justify-start">
+            <div
+              className="w-4 h-4 rounded-full mr-3"
+              style={{ backgroundColor: getAuthorColor(commit.author, authors) }}
+            />
+            <span className="text-neutral-700 dark:text-neutral-300">
+              👤 {commit.author}
+            </span>
           </div>
 
-          {/* 브랜치 정보 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              브랜치
-            </label>
-            <div className="flex items-center space-x-2">
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: getBranchColor(commit.branch, branches, defaultBranch) }}
-              />
-              <span className="text-gray-900 dark:text-white">{commit.branch}</span>
-              <span className={`px-2 py-1 text-xs rounded ${
-                branchType === 'main' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
-                branchType === 'feature' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-                branchType === 'bugfix' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
-                branchType === 'hotfix' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
-                'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-              }`}>
-                {branchType}
-              </span>
-            </div>
-          </div>
-
-          {/* 해시 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              커밋 해시
-            </label>
-            <code className="text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-sm border border-gray-200 dark:border-gray-600">
-              {commit.hash}
-            </code>
+          {/* 브랜치 */}
+          <div className="flex items-center justify-start">
+            <div
+              className="w-4 h-4 rounded-full mr-3"
+              style={{ backgroundColor: getBranchColor(commit.branch, branches, defaultBranch) }}
+            />
+            <span className="text-neutral-700 dark:text-neutral-300 mr-2">
+              🌿 {commit.branch}
+            </span>
+            <span className={`px-2 py-1 text-xs rounded ${
+              branchType === 'main' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+              branchType === 'feature' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
+              branchType === 'bugfix' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
+              branchType === 'hotfix' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
+              'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+            }`}>
+              {branchType}
+            </span>
           </div>
 
           {/* 날짜 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              커밋 날짜
-            </label>
-            <div className="space-y-1">
-              <p className="text-gray-900 dark:text-white">
-                {new Date(commit.date).toLocaleString()}
-              </p>
-              <p className="text-gray-500 text-sm">
-                {getRelativeTime(commit.date)}
-              </p>
-            </div>
+          <div className="flex items-center justify-start">
+            <span className="text-neutral-700 dark:text-neutral-300">
+              📅 {getRelativeTime(commit.date)}
+            </span>
           </div>
 
-          {/* 통계 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              변경 사항
-            </label>
-            <div className="grid grid-cols-3 gap-2 text-sm">
-              <div className="bg-green-50 p-2 rounded text-center">
-                <div className="text-green-600 font-medium">+{commit.stats.additions}</div>
-                <div className="text-gray-500">추가</div>
-              </div>
-              <div className="bg-red-50 p-2 rounded text-center">
-                <div className="text-red-600 font-medium">-{commit.stats.deletions}</div>
-                <div className="text-gray-500">삭제</div>
-              </div>
-              <div className="bg-blue-50 p-2 rounded text-center">
-                <div className="text-blue-600 font-medium">{commit.stats.total}</div>
-                <div className="text-gray-500">총합</div>
-              </div>
-            </div>
+          {/* 전체 날짜 */}
+          <div className="flex items-center justify-start">
+            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
+              🕒 {new Date(commit.date).toLocaleString()}
+            </span>
           </div>
+        </div>
 
-          {/* 부모 커밋 */}
-          {commit.parents.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                부모 커밋
-              </label>
-              <div className="space-y-1">
+        {/* 전체 해시 */}
+        <div className="mb-4">
+          <div className="text-center">
+            <code className="text-neutral-700 dark:text-neutral-300 text-sm bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded">
+              {commit.hash}
+            </code>
+          </div>
+        </div>
+
+        {/* 부모 커밋 */}
+        {commit.parents.length > 0 && (
+          <div className="mb-4">
+            <div className="text-center">
+              <span className="text-neutral-700 dark:text-neutral-300 mr-2">
+                🔗 부모 커밋:
+              </span>
+              <div className="flex flex-wrap gap-2 justify-center mt-2">
                 {commit.parents.map((parent, index) => (
-                  <code key={index} className="block text-gray-900 bg-gray-100 px-2 py-1 rounded text-sm">
-                    {parent.slice(0, 7)}
+                  <code key={index} className="text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                    {parent}
                   </code>
                 ))}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* 머지 커밋 표시 */}
-          {commit.isMergeCommit && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-              <div className="flex items-center space-x-2">
-                <span className="text-yellow-600">🔀</span>
-                <span className="text-yellow-800 font-medium">머지 커밋</span>
+        {/* 머지 커밋 표시 */}
+        {commit.isMergeCommit && (
+          <div className="mb-6">
+            <div className="text-center">
+              <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 inline-block">
+                <div className="flex items-center space-x-2">
+                  <span className="text-yellow-600 dark:text-yellow-400 text-2xl">🔀</span>
+                  <span className="text-yellow-800 dark:text-yellow-300 font-medium">머지 커밋</span>
+                </div>
               </div>
-              <p className="text-yellow-700 text-sm mt-1">
-                이 커밋은 두 개 이상의 브랜치를 병합한 커밋입니다.
-              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        <div className="mt-6 flex justify-end">
-          <button
+        {/* 푸터 버튼 */}
+        <div className="flex justify-end gap-4">
+          <button 
             onClick={onClose}
-            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+            className="px-4 py-2 bg-gray-200 text-black dark:bg-black dark:border-black dark:text-white border border-gray-300 rounded-md text-sm hover:bg-gray-300 dark:hover:bg-gray-800"
+          >
+            GitHub에서 보기
+          </button>
+          <button 
+            onClick={onClose}
+            className="bg-black text-white dark:bg-white dark:text-black text-sm px-4 py-2 rounded-md border border-black hover:bg-gray-800 dark:hover:bg-gray-200"
           >
             닫기
           </button>
@@ -314,7 +341,6 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
   commits,
   branches,
   defaultBranch,
-  onCommitClick,
   isDragging = false,
   onMouseDown,
   onMouseMove,
@@ -382,7 +408,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
       lanes.set(branch, index);
     });
 
-    // 2D 공간 설정 - 화면을 훨씬 크게 (GitKraken 스타일)
+    // 2D 공간 설정 - 화면을 훨씬 크게 
     const laneSpacing = isDesktop ? 200 : 100; // 대폭 증가
     const commitSpacing = isDesktop ? 100 : 60; // 대폭 증가
     const startX = isDesktop ? 350 : 200; 
@@ -475,6 +501,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
     });
 
     return {
+      
       positioned2DCommits: positioned,
       branchLanes: branchLaneInfo,
       svgDimensions: { minX, maxX, svgWidth, svgHeight, startY, timelineWidth, startX },
@@ -877,10 +904,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
             strokeWidth={isDesktop ? "5" : "3"}
             opacity={isFiltered ? 0.3 : 1}
             style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setModalCommit(commit);
-              onCommitClick?.(commit.hash);
-            }}
+            onClick={() => setModalCommit(commit)}
             onMouseEnter={() => setHoveredCommit(commit)}
             onMouseLeave={() => setHoveredCommit(null)}
           />
@@ -1013,31 +1037,31 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
   const GitActivityDashboard = () => {
 
     return (
-      <div className="w-full bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-2 sm:p-6 z-10">
+      <div className="w-full bg-gray-100/90 dark:bg-black border-t border-cyan-200 dark:border-cyan-600 p-2 sm:p-6 z-10 backdrop-blur-sm">
         <h3 className="text-gray-900 dark:text-white text-sm sm:text-xl font-bold mb-2 sm:mb-6 flex items-center">
           📊 Git 활동 분석
         </h3>
         
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
           {/* 전체 통계 - 모바일에서 간소화 */}
-          <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 border border-gray-200 dark:border-gray-600 ">
+          <div className="bg-white dark:bg-black rounded-lg p-2 sm:p-4 border border-cyan-200 dark:border-cyan-600 ">
             <h4 className="text-gray-900 dark:text-white font-semibold mb-2 sm:mb-4 text-xs sm:text-base">📈 통계</h4>
             <div className="grid grid-cols-2 gap-1 sm:gap-4">
               <div className="text-center">
-                <div className="text-sm sm:text-2xl font-bold text-blue-600 dark:text-blue-400">{gitActivityStats.totalCommits}</div>
+                <div className="text-sm sm:text-2xl font-bold text-cyan-600 dark:text-cyan-400">{gitActivityStats.totalCommits}</div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">커밋</div>
               </div>
               <div className="text-center">
-                <div className="text-sm sm:text-2xl font-bold text-green-600 dark:text-green-400">{gitActivityStats.totalMerges}</div>
+                <div className="text-sm sm:text-2xl font-bold text-cyan-600 dark:text-cyan-400">{gitActivityStats.totalMerges}</div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">머지</div>
               </div>
             </div>
           </div>
 
           {/* 개발자별 활동 - 모바일에서 간소화 */}
-          <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 border border-gray-200 dark:border-gray-600">
+          <div className="bg-white dark:bg-black rounded-lg p-2 sm:p-4 border border-cyan-200 dark:border-cyan-600">
             <h4 className="text-gray-900 dark:text-white font-semibold mb-2 sm:mb-4 text-xs sm:text-base">👥 개발자</h4>
-            <div className="space-y-1 sm:space-y-3 max-h-[100px] sm:max-h-64 overflow-y-auto">
+            <div className="space-y-1 sm:space-y-3 max-h-[100px] sm:max-h-[100px] overflow-y-auto">
               {Object.entries(gitActivityStats.authorActivity)
                 .sort(([,a], [,b]) => b.commits - a.commits)
                 .slice(0, isDesktop ? 10 : 2)
@@ -1051,9 +1075,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
                       <span className="text-gray-900 dark:text-white text-xs sm:text-sm truncate">{author.split(' ')[0]}</span>
                     </div>
                     <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
-                      <span className="text-blue-600 dark:text-blue-400 text-xs sm:text-sm flex-shrink-0">{activity.commits}</span>
-                      <span className="text-green-600 dark:text-green-400 text-xs sm:text-sm flex-shrink-0">{activity.additions}</span>
-                      <span className="text-red-600 dark:text-red-400 text-xs sm:text-sm flex-shrink-0">{activity.deletions}</span>
+                      <span className="text-cyan-600 dark:text-cyan-400 text-xs sm:text-sm flex-shrink-0">{activity.commits}</span>
                     </div>
                   </div>
                 ))}
@@ -1061,7 +1083,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
           </div>
 
           {/* 브랜치별 활동 - 데스크톱에서만 표시 */}
-          <div className="bg-white dark:bg-gray-700 rounded-lg p-2 sm:p-4 hidden lg:block border border-gray-200 dark:border-gray-600">
+          <div className="bg-white dark:bg-black rounded-lg p-2 sm:p-4 hidden lg:block border border-cyan-200 dark:border-cyan-600">
             <h4 className="text-gray-900 dark:text-white font-semibold mb-2 sm:mb-4 text-xs sm:text-base">🌿 브랜치</h4>
             <div className="space-y-1 min-h-[50%] sm:space-y-3 max-h-16 sm:max-h-64 overflow-y-auto">
               {Object.entries(gitActivityStats.branchActivity)
@@ -1076,7 +1098,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
                       />
                       <span className="text-gray-900 dark:text-white text-xs sm:text-sm truncate">{branch}</span>
                     </div>
-                    <span className="text-green-600 dark:text-green-400 text-xs">{activity.commits}c</span>
+                    <span className="text-cyan-600 dark:text-cyan-400 text-xs">{activity.commits}c</span>
                   </div>
                 ))}
             </div>
@@ -1087,11 +1109,12 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
   };
 
   return (
-    <div className={`relative w-full ${containerHeight} overflow-hidden bg-gray-50 dark:bg-gray-900 flex flex-col`}>
-      {/* GitKraken 스타일 브랜치 사이드바 - 모바일 최적화 */}
-      <div className="absolute left-0 top-0 w-60 sm:w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-600 z-10">
-        {/* 헤더 */}
-        <div className="px-2 sm:px-4 py-2 sm:py-3 bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+    <div className={`relative w-full ${containerHeight} overflow-hidden bg-white dark:bg-black flex flex-col`}>
+      <GraphBackground />
+              {/* GitKraken 스타일 브랜치 사이드바 - 모바일 최적화 */}
+        <div className="absolute left-0 top-0 w-60 sm:w-80 h-full bg-white/90 dark:bg-black border-r border-cyan-200 dark:border-cyan-600 z-10 backdrop-blur-sm">
+                  {/* 헤더 */}
+          <div className="px-2 sm:px-4 py-2 sm:py-3 bg-gray-100/80 dark:bg-black border-b border-cyan-200 dark:border-cyan-600 backdrop-blur-sm">
           <h3 className="text-gray-900 dark:text-white font-semibold text-xs sm:text-sm">BRANCH / TAG</h3>
         </div>
         
@@ -1113,8 +1136,8 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
             return (
               <div
                 key={branchInfo.branch}
-                className={`flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
-                  branchInfo.isDefault ? 'bg-gray-100 dark:bg-gray-700' : ''
+                className={`flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded hover:bg-gray-100 dark:hover:bg-black cursor-pointer transition-colors ${
+                  branchInfo.isDefault ? 'bg-gray-100 dark:bg-black' : ''
                 }`}
               >
                 {/* 브랜치 아이콘 */}
@@ -1127,20 +1150,24 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
                 
                 {/* 브랜치 정보 */}
                 <div className="flex-1 min-w-0">
+                  <PointerHighlight>
                   <div className="flex items-center space-x-1 sm:space-x-2">
+                  
                     <span className="text-xs">{branchTypeIcon}</span>
                     <span className="text-gray-900 dark:text-white text-xs sm:text-sm font-medium truncate">
                       {branchInfo.branch}
                     </span>
                     {branchInfo.isDefault && (
-                      <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 px-1 rounded hidden sm:inline">
+                      <span className="text-xs text-cyan-600 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-900 px-1 rounded hidden sm:inline">
                         DEFAULT
                       </span>
                     )}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {commitCount} commits
-                  </div>
+                  
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {commitCount} commits
+                    </div>
+                    
+                  </div></PointerHighlight>
                 </div>
               </div>
             );
@@ -1189,7 +1216,7 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
       {/* 툴팁 */}
       {hoveredCommit && (
         <div
-          className="absolute bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-2 sm:p-4 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 max-w-xs sm:max-w-md z-20"
+          className="absolute bg-white dark:bg-black text-gray-900 dark:text-white p-2 sm:p-4 rounded-lg shadow-xl border border-cyan-200 dark:border-cyan-600 max-w-xs sm:max-w-md z-20"
           style={{
             left: Math.min(hoveredCommit.x + (isDesktop ? 320 : 240), window.innerWidth - (isDesktop ? 300 : 250)),
             top: hoveredCommit.y + (isDesktop ? 100 : 80),
@@ -1207,17 +1234,17 @@ const BranchGraph: React.FC<BranchGraphProps> = ({
             <div className="truncate">{getBranchType(hoveredCommit.branch, defaultBranch)} • {hoveredCommit.hash.slice(0, 7)}</div>
             <div className="text-xs">{getRelativeTime(hoveredCommit.date)}</div>
             <div className="flex space-x-2 sm:space-x-4 mt-1 sm:mt-2 text-xs">
-              <span className="text-green-500 dark:text-green-400">+{hoveredCommit.stats.additions}</span>
+              <span className="text-cyan-500 dark:text-cyan-400">+{hoveredCommit.stats.additions}</span>
               <span className="text-red-500 dark:text-red-400">-{hoveredCommit.stats.deletions}</span>
-              <span className="text-blue-500 dark:text-blue-400">{hoveredCommit.stats.total} changes</span>
+              <span className="text-cyan-500 dark:text-cyan-400">{hoveredCommit.stats.total} changes</span>
             </div>
           </div>
-        </div>
+                </div>
       )}
 
       {/* 커밋 상세 모달 */}
       {modalCommit && (
-        <CommitModal
+        <CommitAnimatedModal
           commit={modalCommit}
           authors={authors}
           branches={branches}

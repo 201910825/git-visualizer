@@ -15,7 +15,6 @@ const GitTree: React.FC<GitTreeProps> = ({
   commits,
   branches,
   defaultBranch,
-  onCommitClick,
 }) => {
   // 상태 관리
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>(['all']);
@@ -90,7 +89,7 @@ const GitTree: React.FC<GitTreeProps> = ({
   return (
     <div className="flex flex-col space-y-6">
       {/* 필터 컨트롤 */}
-      <div className="flex flex-col space-y-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col space-y-4 p-4 bg-gray-50 dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600">
         {/* 검색 */}
         <div>
           <input
@@ -98,7 +97,7 @@ const GitTree: React.FC<GitTreeProps> = ({
             placeholder="커밋 메시지, 작성자, 해시 검색..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-black text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
 
@@ -198,12 +197,11 @@ const GitTree: React.FC<GitTreeProps> = ({
       </div>
 
       {/* 그래프 영역 */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="relative bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600">
         <BranchGraph
           commits={filteredCommits}
           branches={selectedBranches}
           defaultBranch={defaultBranch}
-          onCommitClick={onCommitClick}
           isDragging={isDragging}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -215,7 +213,7 @@ const GitTree: React.FC<GitTreeProps> = ({
       {/* 통계 정보 */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
         {/* 전체 커밋 */}
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div className="p-4 bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">전체 커밋</h3>
@@ -230,7 +228,7 @@ const GitTree: React.FC<GitTreeProps> = ({
         </div>
 
         {/* 참여 작성자 */}
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div className="p-4 bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">참여 작성자</h3>
@@ -245,7 +243,7 @@ const GitTree: React.FC<GitTreeProps> = ({
         </div>
 
         {/* 브랜치 */}
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div className="p-4 bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">브랜치</h3>
@@ -260,7 +258,7 @@ const GitTree: React.FC<GitTreeProps> = ({
         </div>
 
         {/* 활동 분석 */}
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+        <div className="p-4 bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">최근 활동</h3>
@@ -277,14 +275,14 @@ const GitTree: React.FC<GitTreeProps> = ({
         </div>
 
         {/* 상위 기여자 차트 */}
-        <div className="md:col-span-2 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="md:col-span-2 p-4 bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">상위 기여자</h3>
           <div className="space-y-2">
             {authors.slice(0, 5).map((author, index) => {
               const authorCommits = commits.filter(c => c.author === author).length;
               const percentage = (authorCommits / commits.length) * 100;
-              const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500'];
-              const darkColors = ['dark:bg-blue-400', 'dark:bg-green-400', 'dark:bg-purple-400', 'dark:bg-orange-400', 'dark:bg-pink-400'];
+              const colors = ['bg-cyan-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500'];
+              const darkColors = ['dark:bg-cyan-400', 'dark:bg-green-400', 'dark:bg-purple-400', 'dark:bg-orange-400', 'dark:bg-pink-400'];
               
               return (
                 <div key={author} className="flex items-center space-x-3">
@@ -307,15 +305,15 @@ const GitTree: React.FC<GitTreeProps> = ({
         </div>
 
         {/* 브랜치 활동 차트 */}
-        <div className="md:col-span-1 lg:col-span-2 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="md:col-span-1 lg:col-span-2 p-4 bg-white dark:bg-black rounded-lg border border-cyan-200 dark:border-cyan-600">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">브랜치별 활동</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {branches.slice(0, 6).map((branch, index) => {
               const branchCommits = commits.filter(c => c.branch === branch).length;
-              const colors = ['text-blue-600', 'text-green-600', 'text-purple-600', 'text-orange-600', 'text-pink-600', 'text-indigo-600'];
-              const darkColors = ['dark:text-blue-400', 'dark:text-green-400', 'dark:text-purple-400', 'dark:text-orange-400', 'dark:text-pink-400', 'dark:text-indigo-400'];
-              const bgColors = ['bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-orange-100', 'bg-pink-100', 'bg-indigo-100'];
-              const darkBgColors = ['dark:bg-blue-900/20', 'dark:bg-green-900/20', 'dark:bg-purple-900/20', 'dark:bg-orange-900/20', 'dark:bg-pink-900/20', 'dark:bg-indigo-900/20'];
+              const colors = ['text-cyan-600', 'text-green-600', 'text-purple-600', 'text-orange-600', 'text-pink-600', 'text-indigo-600'];
+              const darkColors = ['dark:text-cyan-400', 'dark:text-green-400', 'dark:text-purple-400', 'dark:text-orange-400', 'dark:text-pink-400', 'dark:text-indigo-400'];
+              const bgColors = ['bg-cyan-100', 'bg-green-100', 'bg-purple-100', 'bg-orange-100', 'bg-pink-100', 'bg-indigo-100'];
+              const darkBgColors = ['dark:bg-cyan-900/20', 'dark:bg-green-900/20', 'dark:bg-purple-900/20', 'dark:bg-orange-900/20', 'dark:bg-pink-900/20', 'dark:bg-cyan-900/20'];
               
               return (
                 <div key={branch} className={`p-3 rounded-lg ${bgColors[index]} ${darkBgColors[index]}`}>
@@ -331,6 +329,7 @@ const GitTree: React.FC<GitTreeProps> = ({
                     <div className={`text-lg font-bold ${colors[index]} ${darkColors[index]}`}>
                       {Math.round((branchCommits / commits.length) * 100)}%
                     </div>
+                    
                   </div>
                 </div>
               );
