@@ -1,9 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createHashRouter } from "react-router-dom";
 import Repository from "../Repository";
 import App from "../App";
 import RepositoryGraph from "../components/RepositoryGraph";
 
-export const Router = createBrowserRouter([
+export const Router = createHashRouter([
     {
         path: "/",
         element: <App />,
