@@ -62,7 +62,7 @@ function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="relative bottom-0 transform -translate-x-1/2 flex flex-col items-center z-20"
+          className="relative bottom-[-10%]transform justify-center flex flex-col items-center z-20"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
@@ -108,7 +108,7 @@ function App() {
       </div>
         
         
-      <div className="relative z-10">
+      <div className="relative z-10 bg-transparent">
         <MacbookScroll
           title={
             <span>
@@ -132,8 +132,9 @@ function App() {
       </div>
       </div>
       
-      <ScrollEffect />
+      
       <div className="relative z-10">
+        <ScrollEffect />
         <Footer />
       </div>
     </div>
