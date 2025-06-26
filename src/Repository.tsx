@@ -63,7 +63,7 @@ function Repository() {
         />
       )}
       <Footer />
-      <ThreeDMarquee className="fixed top-[20%] left-0 z-[-1] right-0 z-10 mx-auto my-10 max-w-7xl rounded-3xl bg-transparent p-2 ring-1 ring-neutral-700/10 z-[-1]" images={[
+      <ThreeDMarquee className="absolute top-[20%] left-0 z-[-1] right-0 z-10 mx-auto my-10 max-w-7xl rounded-3xl bg-transparent p-2 ring-1 ring-neutral-700/10 z-[-1]" images={[
           sample1,
           sample2,
           sample3,
@@ -72,11 +72,6 @@ function Repository() {
           sample2,
           sample3,
           sample4,
-          sample1,
-          sample2,
-          sample3,
-          sample4,
-         
         ]} />
     </div>
   );
